@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:shex="http:/www.w3.org/shex/"
+    targetNamespace="http:/www.w3.org/shex/" elementFormDefault="qualified" vc:minVersion="1.1"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning">
+
+
+    <!-- Schema -->
+    <xs:complexType name="Schema">
+        <xs:annotation>
+            <xs:documentation>A <code>Schema</code> consists of a set of labeled rules and the optional label that identifies the starting rule (entry point) in the Schema</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="rule" type="shex:LabeledRule" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="start" type="shex:Label" use="optional"/>
+    </xs:complexType>
+
+    <!-- Labeled Rule -->
+    <xs:complexType name="LabeledRule">
+        <xs:annotation>
+            <xs:documentation>A <code>LabeledRule</code>LabeledRule is the combination of a Rule and a label that uniquely identifies it
+            within the context of a Schema.   A Label can either be a URI or a Blank Node identifier.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="rule" type="shex:Rule"/>
+        </xs:sequence>
+        <xs:attribute name="label" type="shex:Label" use="required"/>
+    </xs:complexType>
+
+    <!-- Rule -->
+    <xs:complexType name="Rule">
+        <xs:annotation>
+            <xs:documentation>A <code>Rule</code> is a predicate that, when applied to an rdf graph, returns an <code>OptValidity</code> instance</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="group" type="shex:GroupRule"/>
+            <xs:element name="arc" type="shex:ArcRule"/>
+            <xs:element name="and" type="shex:AndRule"/>
+            <xs:element name="xor" type="shex:XorRule"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="GroupRule">
+        <xs:annotation>
+            <xs:documentation>A <code>GroupRule</code>GroupRule of a rule, a sequence of actions that are to be "executed" if the rule returns <code>PASS</code> 
+                when evaluated against a graph and an optionality indicator that determines whether the graph must meet the <code>Rule</code></xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="rule" type="shex:Rule"/>
+            <xs:element name="action" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="optional" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ArcRule">
+        <xs:annotation>
+            <xs:documentation>An <code>ArcRule</code> consists of a <code>predicateFilter</code> that selects a subset of the target graph and a list and
+            a <code>targetSpecification</code> that the resulting subset must meet.  It also carries an optional minimum (<code>min</code>) and maximum (<code>max</code>)
+            number of triples that can meet the filter requirements as well as a collection of <code>actions</code> that are "executed" if the graph
+            passes the filter rules</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="predicateFilter" type="shex:NameClass"/>
+            <xs:element name="targetSpecifation" type="shex:ValueClass"/>
+            <xs:element name="action" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="min" type="xs:nonNegativeInteger"/>
+        <xs:attribute name="max" type="xs:nonNegativeInteger"/>
+    </xs:complexType>
+
+    <xs:complexType name="AndRule">
+        <xs:annotation>
+            <xs:documentation>An <code>AndRule</code> consists of a set of rules, all of which must not fail in order for the entire rule to pass.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="rule" type="shex:Rule" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="OrRule">
+        <xs:annotation>
+            <xs:documentation>An <code>OrRule</code> consists of a set of rules, exactly one of which must pass for the entire rule to pass.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="rule" type="shex:Rule" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- NameClass - predicate filter -->
+    <xs:complexType name="NameClass">
+        <xs:annotation>
+            <xs:documentation>A <code>NameClass</code> is the filter for a set of predicates in a graph.</xs:documentation></xs:annotation>
+        <xs:choice>
+            <xs:element name="inclusion" type="shex:IRIorStem"/>
+            <xs:element name="exclusion" type="shex:IRIorStem" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- ValueClass - object filter -->
+    <xs:complexType name="ValueClass">
+        <xs:annotation>
+            <xs:documentation>A <code>ValueClass</code> is a predicate used against the list of targets in a graph</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="valueType" type="xs:anyURI"/>
+            <xs:element name="inclusion" type="shex:IRIStemOrLiteral" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="exclusion" type="shex:IRIStemOrLiteral" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:simpleType name="Label">
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+
+    <xs:complexType name="Literal">
+        <xs:sequence>
+            <xs:element name="lexicalValue" type="xs:string"/>
+            <xs:element name="dataType" type="xs:anyURI"/>
+            <xs:element name="langTag" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="IRIstem">
+        <xs:restriction base="xs:anyURI"/>
+    </xs:simpleType>
+
+    <xs:complexType name="IRIorStem">
+        <xs:choice>
+            <xs:element name="term" type="xs:anyURI"/>
+            <xs:element name="stem" type="shex:IRIstem"/>
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="IRIStemOrLiteral">
+        <xs:choice>
+            <xs:element name="term" type="xs:anyURI"/>
+            <xs:element name="stem" type="shex:IRIstem"/>
+            <xs:element name="literal" type="shex:Literal"/>
+        </xs:choice>
+    </xs:complexType>
+
+
+</xs:schema>
