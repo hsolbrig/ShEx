@@ -5,14 +5,15 @@
 
 
     <!-- Schema -->
+    <xs:element name="Schema" type="shex:Schema"/>
     <xs:complexType name="Schema">
         <xs:annotation>
             <xs:documentation>A <code>Schema</code> consists of a set of labeled rules and the optional label that identifies the starting rule (entry point) in the Schema</xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="rule" type="shex:LabeledRule" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="rules" type="shex:LabeledRule" minOccurs="1" maxOccurs="unbounded"/>
         </xs:sequence>
-        <xs:attribute name="start" type="shex:Label" use="optional"/>
+        <xs:attribute name="start" type="shex:Label"/>
     </xs:complexType>
 
     <!-- Labeled Rule -->
@@ -35,10 +36,12 @@
         <xs:choice>
             <xs:element name="group" type="shex:GroupRule"/>
             <xs:element name="arc" type="shex:ArcRule"/>
+            <xs:element name="rarc" type="shex:RevArcRule"/>
             <xs:element name="and" type="shex:AndRule"/>
             <xs:element name="xor" type="shex:XorRule"/>
         </xs:choice>
     </xs:complexType>
+    
 
     <xs:complexType name="GroupRule">
         <xs:annotation>
@@ -54,15 +57,28 @@
 
     <xs:complexType name="ArcRule">
         <xs:annotation>
-            <xs:documentation>An <code>ArcRule</code> consists of a <code>predicateFilter</code> that selects a subset of the target graph and a list and
+            <xs:documentation>An <code>ArcRule</code> consists of a <code>filter</code> that selects a subset of the target graph and a list and
             a <code>targetSpecification</code> that the resulting subset must meet.  It also carries an optional minimum (<code>min</code>) and maximum (<code>max</code>)
             number of triples that can meet the filter requirements as well as a collection of <code>actions</code> that are "executed" if the graph
             passes the filter rules</xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="predicateFilter" type="shex:NameClass"/>
-            <xs:element name="targetSpecifation" type="shex:ValueClass"/>
-            <xs:element name="action" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="filter" type="shex:PredicateFilter"/>
+            <xs:element name="valueSpec" type="shex:ObjectSpecification"/>
+            <xs:element name="actions" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="min" type="xs:nonNegativeInteger"/>
+        <xs:attribute name="max" type="xs:nonNegativeInteger"/>
+    </xs:complexType>
+
+    <xs:complexType name="RevArcRule">
+        <xs:annotation>
+            <xs:documentation>A <code>RevArcRule</code> is the same as an <code>ArcRule</code> except that the selector goes from object to subject.</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="filter" type="shex:PredicateFilter"/>
+            <xs:element name="valueSpec" type="shex:SubjectSpecification"/>
+            <xs:element name="actions" type="xs:anyType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="min" type="xs:nonNegativeInteger"/>
         <xs:attribute name="max" type="xs:nonNegativeInteger"/>
@@ -77,34 +93,47 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="OrRule">
+    <xs:complexType name="XorRule">
         <xs:annotation>
-            <xs:documentation>An <code>OrRule</code> consists of a set of rules, exactly one of which must pass for the entire rule to pass.</xs:documentation>
+            <xs:documentation>An <code>XorRule</code> consists of a set of rules, exactly one of which must pass for the entire rule to pass.</xs:documentation>
         </xs:annotation>
         <xs:sequence>
             <xs:element name="rule" type="shex:Rule" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
-    <!-- NameClass - predicate filter -->
-    <xs:complexType name="NameClass">
+    <!-- PredicateFilter - predicate filter -->
+    <xs:complexType name="PredicateFilter">
         <xs:annotation>
-            <xs:documentation>A <code>NameClass</code> is the filter for a set of predicates in a graph.</xs:documentation></xs:annotation>
+            <xs:documentation>The filter for a set of predicates in a graph.</xs:documentation></xs:annotation>
         <xs:choice>
             <xs:element name="inclusion" type="shex:IRIorStem"/>
             <xs:element name="exclusion" type="shex:IRIorStem" minOccurs="0" maxOccurs="unbounded"/>
         </xs:choice>
     </xs:complexType>
 
-    <!-- ValueClass - object filter -->
-    <xs:complexType name="ValueClass">
+    <!-- ObjectSpecification - object specification -->
+    <xs:complexType name="ObjectSpecification">
         <xs:annotation>
             <xs:documentation>A <code>ValueClass</code> is a predicate used against the list of targets in a graph</xs:documentation>
         </xs:annotation>
         <xs:choice>
             <xs:element name="valueType" type="xs:anyURI"/>
-            <xs:element name="inclusion" type="shex:IRIStemOrLiteral" minOccurs="1" maxOccurs="unbounded"/>
-            <xs:element name="exclusion" type="shex:IRIStemOrLiteral" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="inclusion" type="shex:IRIorStemOrLiteral" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="exclusion" type="shex:IRIorStemOrLiteral" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="shape" type="shex:Label"/>
+        </xs:choice>
+    </xs:complexType>
+    
+    <!-- SubjectSpecification - subject specification -->
+    <xs:complexType name="SubjectSpecification">
+        <xs:annotation>
+            <xs:documentation>A <code>SubjectSpecification</code> is a predicate used against the list of subjects in a graph</xs:documentation>
+        </xs:annotation>
+        <xs:choice>
+            <xs:element name="inclusion" type="shex:IRIorStemOrLiteral" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="exclusion" type="shex:IRIorStemOrLiteral" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="shape" type="shex:Label"/>
         </xs:choice>
     </xs:complexType>
 
@@ -126,18 +155,37 @@
 
     <xs:complexType name="IRIorStem">
         <xs:choice>
-            <xs:element name="term" type="xs:anyURI"/>
+            <xs:element name="iri" type="xs:anyURI"/>
             <xs:element name="stem" type="shex:IRIstem"/>
         </xs:choice>
     </xs:complexType>
 
-    <xs:complexType name="IRIStemOrLiteral">
+    <xs:complexType name="IRIorStemOrLiteral">
         <xs:choice>
-            <xs:element name="term" type="xs:anyURI"/>
+            <xs:element name="iri" type="xs:anyURI"/>
             <xs:element name="stem" type="shex:IRIstem"/>
             <xs:element name="literal" type="shex:Literal"/>
         </xs:choice>
     </xs:complexType>
+    
+    <xs:element name="EvalContext" type="shex:EvalContext"/>
+    <xs:complexType name="EvalContext">
+        <xs:sequence>
+            <xs:element name="schema" type="shex:Schema"/>
+            <xs:element name="graph" type="xs:anyType"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    
+    <xs:simpleType name="OptValidity">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PASS"/>
+            <xs:enumeration value="FAIL"/>
+            <xs:enumeration value="NOMATCH"/>
+            <xs:enumeration value="DUNNO"/>
+            <xs:enumeration value="ERROR"/>
+        </xs:restriction>
+    </xs:simpleType>
 
 
 </xs:schema>
