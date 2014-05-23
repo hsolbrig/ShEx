@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xchema [
+  <!ENTITY ex "http://ex.example/#">
+  <!ENTITY foaf "http://foaf.example/#">
+  <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#">
+  <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#">
+
+]>
+<Schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http:/www.w3.org/shex/ ../xsd/ShEx.xsd" xmlns="http:/www.w3.org/shex/"
+ xmlns:ex="http://ex.example/#" xmlns:foaf="http://foaf.example/#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+ xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" start="IssueShape">
+    <shape label="IssueShape">
+        <and>
+            <arc>
+                <p>
+                    <inclusion>
+                        <iri>&ex;state</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <inclusion>
+                        <iri>&ex;assigned</iri>
+                        <iri>&ex;unassigned</iri>
+                    </inclusion>
+                </o>
+            </arc>
+            <arc>
+                <p>
+                    <inclusion>
+                        <iri>&ex;reportedBy</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <shape>UserShape</shape>
+                </o>
+            </arc>
+            <group optional="true">
+                <and>
+                    <arc>
+                        <p>
+                            <inclusion>
+                                <iri>&ex;reproducedBy</iri>
+                            </inclusion>
+                        </p>
+                        <o>
+                            <shape>EmployeeShape</shape>
+                        </o>
+                    </arc>
+                    <arc>
+                        <p>
+                            <inclusion>
+                                <iri>&ex;reproducedOn</iri>
+                            </inclusion>
+                        </p>
+                        <o>
+                            <valueType>&xsd;dateTime</valueType>
+                        </o>
+                    </arc>
+                </and>
+            </group>
+            <arc min="0" max="unbounded">
+                <p>
+                    <inclusion>
+                        <iri>&ex;related</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <shape>IssueShape</shape>
+                </o>
+            </arc>
+        </and>
+    </shape>
+    <shape label="UserShape">
+        <and>
+            <xor>
+                <arc>
+                    <p>
+                        <inclusion>
+                            <iri>&foaf;name</iri>
+                        </inclusion>
+                    </p>
+                    <o>
+                        <valueType>&xsd;string</valueType>
+                    </o>
+                </arc>
+                <and>
+                    <arc min="1" max="unbounded">
+                        <p>
+                            <inclusion>
+                                <iri>&foaf;givenName</iri>
+                            </inclusion>
+                        </p>
+                        <o>
+                            <valueType>&xsd;string</valueType>
+                        </o>
+                    </arc>
+                    <arc>
+                        <p>
+                            <inclusion>
+                                <iri>&foaf;familyName</iri>
+                            </inclusion>
+                        </p>
+                        <o>
+                            <valueType>&xsd;string</valueType>
+                        </o>
+                    </arc>
+                </and>
+            </xor>
+            <arc>
+                <p>
+                    <inclusion>
+                        <iri>&foaf;mbox</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <valueType>&rdfs;Resource</valueType>
+                </o>
+            </arc>
+        </and>
+    </shape>
+    <shape label="EmployeeShape">
+        <and>
+            <arc max="unbounded">
+                <p>
+                    <inclusion>
+                        <iri>&foaf;givenName</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <valueType>&xsd;string</valueType>
+                </o>
+            </arc>
+            <arc>
+                <p>
+                    <inclusion>
+                        <iri>&foaf;familyName</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <valueType>&xsd;string</valueType>
+                </o>
+            </arc>
+            <arc min="0" max="unbounded">
+                <p>
+                    <inclusion>
+                        <iri>&foaf;phone</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <valueType>&rdfs;Resource</valueType>
+                </o>
+            </arc>
+            <arc>
+                <p>
+                    <inclusion>
+                        <iri>&foaf;mbox</iri>
+                    </inclusion>
+                </p>
+                <o>
+                    <valueType>&rdfs;Resource</valueType>
+                </o>
+            </arc>
+        </and>
+    </shape>
+</Schema>
