@@ -29,9 +29,9 @@
 
 from rdflib import RDFS, XSD, URIRef, Literal
 
-from optValiditySyns import *
-from rdfops import toLiteral
-from iriOrStem import stemCompare
+from ShEx.optValiditySyns import *
+from ShEx.rdfops import toLiteral
+from ShEx.iriOrStem import stemCompare
 
 def evalValueType(vt, n):
     if vt == RDFS.Resource and isinstance(n, URIRef):
@@ -63,5 +63,5 @@ def evalExclusion(mvs, n):
     return F if evalInclusion(mvs, n) == P else P
 
 def evalShape(ec, vr, n):
-    from evaluate import evalRule, ruleFor
+    from ShEx.evaluate import evalRule, ruleFor
     return evalRule(ec, n, ruleFor(ec.schema,vr)) if not isinstance(n, Literal) else F

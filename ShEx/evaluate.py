@@ -27,19 +27,20 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from rdflib import Graph
+from functools import reduce
 
-from schema.ShEx import GroupRule, AndRule, XorRule, ArcRule
-from EvalContext import EvalContext
-from evalCardinality import evalCardinality
-from optValiditySyns import *
-from utils.trace import trace_rule
+from ShEx.schema.ShEx import GroupRule, AndRule, XorRule, ArcRule
+from ShEx.EvalContext import EvalContext
+from ShEx.evalCardinality import evalCardinality
+from ShEx.optValiditySyns import *
+from ShEx.utils.trace import trace_rule
 
-from rdfops import triplesForSubject, triplesForObject
-from predicateFilter import evalPredicateFilter
-from subjectSpecification import evalSubjectSpecification
-from objectSpecification import evalObjectSpecification
+from ShEx.rdfops import triplesForSubject, triplesForObject
+from ShEx.predicateFilter import evalPredicateFilter
+from ShEx.subjectSpecification import evalSubjectSpecification
+from ShEx.objectSpecification import evalObjectSpecification
 
-from dispatch import dispatch
+from ShEx.dispatch import dispatch
 
 
 

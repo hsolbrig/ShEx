@@ -28,7 +28,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from rdflib import URIRef, Graph
-from rdfops import triplesForPredicate, toGraph
+from ShEx.rdfops import triplesForPredicate, toGraph
 
 def stemCompare(iri, stem):
     return URIRef(str(iri)[:len(stem)]) == URIRef(stem)

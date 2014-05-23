@@ -28,8 +28,8 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-from utils.dumpGraph import dumpGraph
-from optValiditySyns import *
+from ShEx.utils.dumpGraph import dumpGraph
+from ShEx.optValiditySyns import *
 
 # TODO: Figure out what we can dispatch and act accordingly.  URL's?
 def dispatch(actions, g, ec):
@@ -37,5 +37,5 @@ def dispatch(actions, g, ec):
     if len(actions) == 0:
         return P
     for a in actions:
-        print "DISPATCH: %s(%s %s ec)" % (a, dumpGraph(g))
+        print ("DISPATCH: %s(%s ec)" % (a, dumpGraph(g)))
     return P

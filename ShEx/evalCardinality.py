@@ -27,12 +27,12 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from utils.trace import trace
-from optValiditySyns import *
+from ShEx.utils.trace import trace
+from ShEx.optValiditySyns import *
 
 @trace
 def evalCardinality(g, min, max):
-    return Z if min is not None and len(g) == 0 and min == 0 \
+    return Z if len(g) == 0 and min == 0 \
         else D if len(g) == 0 \
-        else F if (min is not None and len(g) < min) or (max is not None and len(g) > max) \
+        else F if len(g) < min or (max != "unbounded" and len(g) > max) \
         else P

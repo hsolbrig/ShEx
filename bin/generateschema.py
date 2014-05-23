@@ -65,7 +65,7 @@ import traceback
 try:
     tns = generator.namespaces().pop()
     modules = generator.bindingModules()
-    print 'Python for %s requires %d modules' % (tns, len(modules))
+    print ('Python for %s requires %d modules' % (tns, len(modules)))
 
     top_module = None
     path_dirs = set()
@@ -74,7 +74,7 @@ try:
 
     generator.writeNamespaceArchive()
 except Exception as e:
-    print 'Exception generating bindings: %s' % (e,)
+    print ('Exception generating bindings: %s' % (e,))
     traceback.print_exception(*sys.exc_info())
     sys.exit(3)
 

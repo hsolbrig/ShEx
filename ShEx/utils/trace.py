@@ -27,19 +27,22 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
+doTrace = False
+
 def trace(fn):
     def wrapped(*args, **kwargs):
-        print fn.__name__ + ':',
+        if doTrace:
+            print (fn.__name__ + ':',end='')
         res = fn(*args, **kwargs)
-        print "%s " % res
+        if doTrace:
+            print ("%s " % res)
         return res
     return wrapped
 
 def trace_rule(fn):
     def wrapped(ec, i, r, _depth=0):
-        # print "%s(ec, %s, %s)=" % (fn.__name__, i, r),
         res = fn(ec, i, r)
-        # print "%s " % res
-        print "%s(ec, %s, %s)=%s" % (fn.__name__, i, r, res)
+        if doTrace:
+            print ("%s(ec, %s, %s)=%s" % (fn.__name__, i, r, res))
         return res
     return wrapped
